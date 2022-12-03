@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const { errorCatch, errorGenerator, generateFileName, prettyError, getBase, print } = require("../util");
 const csrf = require("../middleware/csrf");
 const auth = require("../middleware/auth");
+const bodyParser = require("body-parser");
 
 // Defina a rota para a nossa API
 url.get('/:tag', errorCatch(async (req, res, next) => {
@@ -45,7 +46,7 @@ async function processAddLink(req, res) {
 	}
 	// Obtenha a tag e os links a partir do corpo da solicitação
 	const tag = crypto.randomBytes(5).toString('hex');
-	const links = req.headers.links;
+	const links = req.body.links;
 
 	// Crie um novo documento no banco de dados com a tag e os links fornecidos
 	try {
@@ -60,6 +61,7 @@ async function processAddLink(req, res) {
 
 url.post("/", auth.header, errorCatch(processAddLink));
 
+url.use(bodyParser.json());
 url.use(auth);
 url.use(csrf);
 

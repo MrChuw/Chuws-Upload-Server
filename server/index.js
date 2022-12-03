@@ -20,12 +20,9 @@ const app = express();
 // Global middleware
 app.set("view engine", "ejs");
 app.enable("trust proxy");
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '100mb' }));
 app.use(cookie());
 app.set("x-powered-by", false);
-
-
-const imgur = require("./api/imgur"); // Teste para a nova api
 
 // Client
 const client = path.join(__dirname, "client");
@@ -43,6 +40,7 @@ if (process.env.ratelimit !== undefined) {
 // Global rate limit per minute
 app.use(ratelimit(limit, 60));
 
+const imgur = require("./api/imgur"); // Teste para a nova api
 app.get("/imlinks", async (req, res) => { 
 	res.render(getLoc("imlinks"), {})
 });
