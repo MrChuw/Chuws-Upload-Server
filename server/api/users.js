@@ -294,10 +294,10 @@ users.get("/:id/files", errorCatch(async function (req, res) {
 			if (typeof no === "number" && no >= 0 && no < BIG) {
 				pageNo = no;
 			} else {
-				return res.status(400).send(errorGenerator(400, "Invalid page number."));
+				return res.status(400).send(errorGenerator(400, "Número de página inválido."));
 			}
 		} catch (err) {
-			return res.status(400).send(errorGenerator(400, "Invalid page number."));
+			return res.status(400).send(errorGenerator(400, "Número de página inválido."));
 		}
 
 	}

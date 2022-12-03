@@ -440,8 +440,6 @@ window.addEventListener("DOMContentLoaded", function () {
 			const redirectLink = document.createElement("a");
 			redirectLink.href = `${BaseUrl}/r/${current.id}`;
 			redirectLink.innerText = `${BaseUrl}/r/${current.id}`;
-			// redirectLink.href = `${BaseUrl}/u/${current.id}`;
-			// redirectLink.innerText = `${BaseUrl}/u/${current.id}`;
 			redirect.appendChild(redirectLink);
 			tr.appendChild(redirect);
 

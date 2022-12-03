@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			});
 			if (res.error) {
-				showError(`Something went wrong: ${res.error.message}`);
+				showError(`Algo deu errado: ${res.error.message}`);
 			} else {
 				const resultBox = document.getElementsByClassName("result-box")[0];
 				const resultLink = document.getElementById("result-link");
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				resultBox.hidden = false;
 			}
 		} else {
-			showError("Please fill out both username and password.");
+			showError("Por favor, preencha o nome de usuário e a senha.");
 		}
 		return false;
 	}

@@ -91,8 +91,8 @@ async function getFile(req, res, next) {
 		if (req.headers.referer != `${getBase(req)}/dashboard`) {
 			if (["404", "error"].includes(req.params.id)){
 				print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "404", req)}
-			} else {
-				print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "dono:".concat(" ", file.owner), req)}
+			} else { if (req.headers.referer != `${getBase(req)}/dashboard`) {
+				print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "dono:".concat(" ", file.owner), req)}}
 		if (!req.headers.referer) {
 			print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "dono:".concat(" ", file.owner), req)
 		}
