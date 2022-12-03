@@ -1,0 +1,16 @@
+
+html {
+	background-color: #181a1b;
+}
+
+.login-container {
+	background-color: #343434;
+}
+
+.section *{
+	color: #ffffff;
+} 
+
+.input, .textarea {
+	color: black;
+}

@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<%- include('../partials/sharedMeta.ejs'); %>
+		<link rel="stylesheet" type="text/css" href="/css/teste.css">
+		<script src="https://unpkg.com/@popperjs/core@2"></script>
+		<script src="https://unpkg.com/tippy.js@6"></script>
+		<link rel="stylesheet" href="https://unpkg.com/tippy.js@6.3.7/animations/shift-away.css"/>
+		<link rel="stylesheet" href="https://unpkg.com/tippy.js@6.3.7/themes/light.css"/>
+		<script src="/js/ibages.js"></script>
+</head>
+<body>
+<%- include('../partials/navbar.ejs'); %>
+
+<div id="links">
+	<ul id="images">
+	</ul>
+</div>
+
+<script>showImages(<%- JSON.stringify(links) %>); initializeTippy();</script>
+</body>
+</html>
+
+<!-- <script>showImages(<%- JSON.stringify(links) %>); initializeTippy();</script> -->
+
+
+<!-- <script>
+	let links = <%- JSON.stringify(links) %>;
+
+	links = links.split(" ")
+
+	tippy("img", {
+		allowHTML: true,
+		placement: 'top',
+		animation: 'scale',
+		theme: "your-theme",
+		boundary: "window",
+	});
+
+	const ul = document.getElementById("images");
+	for (let index = 0; index < links.length; index++) {
+		const li = document.createElement('li');
+		li.innerHTML = `
+		<li>
+			<a href="${links[index]}">
+				<img data-tippy-content="<img class='lage-image' style='height: fit-content; width: fit-content' src='${links[index]}'>" class="small-image" src="${links[index]}" loading="eager">
+			</a>
+		</li>`;
+		document.getElementById('images').appendChild(li);
+	}
+</script> -->
+

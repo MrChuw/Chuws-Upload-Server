@@ -1,7 +1,7 @@
 // URL Shortener and fetcher
 const express = require("express");
 const url = express.Router();
-const { errorCatch, errorGenerator, generateFileName, prettyError, getBase } = require("../util");
+const { errorCatch, errorGenerator, generateFileName, prettyError, getBase, print } = require("../util");
 const { isURL, trim, isEmpty, isAlphanumeric } = require("validator");
 const auth = require("../middleware/auth");
 const db = require("../util/db");
@@ -19,8 +19,10 @@ url.get("/:tag", errorCatch(async function (req, res, next) {
 			// 404
 			next();
 		}
-	} else {
-		res.status(400).send(prettyError(400, "Invalid short URL tag."));
+		// print(`Redirecionado para ${target.url}`, `${getBase(req)}/r/${tag}`, req )
+	}
+	else {
+		res.status(400).send(prettyError(400, "Tag de URL curta inválida."));
 	}
 }));
 
@@ -41,9 +43,10 @@ async function processAddLink(req, res) {
 
 		const tag = (isValid && !inUse) ? providedTag : await generateFileName(6);
 		await db.addLink(tag, trim(url), req.user.username);
-		res.send({ success: true, url: `${getBase(req)}/u/${tag}` });
+		res.send({ success: true, url: `${getBase(req)}/r/${tag}` });
+		print(`Criando redirect para ${url} pela api.`, `${req.user.username} ${getBase(req)}/r/${tag}`, req )
 	} else {
-		return res.status(400).send(errorGenerator(400, "Bad request: Header \"shorten-url\" must be provided and be a url."));
+		return res.status(400).send(errorGenerator(400, "Solicitação inválida: o Header \"shorten-url\" deve ser fornecido e ser um url."));
 	}
 }
 
@@ -71,9 +74,12 @@ url.post("/web", errorCatch(async function (req, res) {
 
 		const tag = (isValid && !inUse) ? providedTag : await generateFileName(6);
 		await db.addLink(tag, trim(url), req.user.username);
-		res.send({ success: true, url: `${getBase(req)}/u/${tag}` });
-	} else {
-		return res.status(400).send(errorGenerator(400, "Bad request: Header \"shorten-url\" must be provided and be a url."));
+		// res.send({ success: true, url: `${getBase(req)}/u/${tag}` });
+		res.send({ success: true, url: `${getBase(req)}/r/${tag}` });
+		print(`Criando redirect para ${url}`, `${req.user.username} ${getBase(req)}/r/${tag}`, req )
+	} 
+	else {
+		return res.status(400).send(errorGenerator(400, "Solicitação inválida: o Header \"shorten-url\" deve ser fornecido e ser um url."));
 	}
 }));
 
@@ -86,18 +92,20 @@ url.delete("/:tag", auth, errorCatch(async function (req, res) {
 		if (link) {
 			if (link.owner !== req.user.username) {
 				if (!req.user.isAdmin) {
-					return res.status(403).send(errorGenerator(403, "You are not allowed to delete that link."));
+					return res.status(403).send(errorGenerator(403, "Você não tem permissão para excluir esse link."));
 				}
 			}
 
 			await db.removeLink(tag);
-			res.send({ success: true, message: "Link removed!" });
+			res.send({ success: true, message: "Link removido!" });
+			print(`Apagando redirect para ${link.url} de ${link.owner}`, `${req.user.username} ${getBase(req)}/r/${tag}`, req )
 		} else {
 			// 404
-			res.send(404).send(errorGenerator(404, "Link tag not found."));
-		}
-	} else {
-		res.status(400).send(prettyError(400, "Invalid short URL tag."));
+			res.send(404).send(errorGenerator(404, "Tag do link não encontrado."));
+		}} 
+	else {
+		res.status(400).send(prettyError(400, "Tag de URL curta inválida."));
 	}
 }));
 module.exports = url;
+

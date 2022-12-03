@@ -40,7 +40,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	// Sidebar
 	const helloBox = document.getElementById("hello");
-	helloBox.innerText = "Hey, " + window.user.username + "!";
+	helloBox.innerText = "Ola, " + window.user.username + "!";
 
 	const getTarget = () => Persist.get("targetUser");
 	const getTab = () => Persist.get("tab");
@@ -270,7 +270,7 @@ window.addEventListener("DOMContentLoaded", function () {
 		if (files.length === 0) {
 			const noContent = document.createElement("h2");
 			noContent.className = "has-text-centered";
-			noContent.innerText = "There are no items to display.";
+			noContent.innerText = "Não há itens para exibir.";
 			parent.appendChild(noContent);
 		}
 
@@ -438,8 +438,10 @@ window.addEventListener("DOMContentLoaded", function () {
 
 			const redirect = document.createElement("td");
 			const redirectLink = document.createElement("a");
-			redirectLink.href = `${BaseUrl}/u/${current.id}`;
-			redirectLink.innerText = `${BaseUrl}/u/${current.id}`;
+			redirectLink.href = `${BaseUrl}/r/${current.id}`;
+			redirectLink.innerText = `${BaseUrl}/r/${current.id}`;
+			// redirectLink.href = `${BaseUrl}/u/${current.id}`;
+			// redirectLink.innerText = `${BaseUrl}/u/${current.id}`;
 			redirect.appendChild(redirectLink);
 			tr.appendChild(redirect);
 
@@ -468,7 +470,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 			deleteButton.onclick = function () {
 				deleteButton.classList.add("is-loading");
-				const sure = confirm(`Are you sure you want to delete link ${current.id}?`);
+				const sure = confirm(`Tem certeza de que deseja excluir o link ${current.id}?`);
 				if (sure) {
 					Api.delete(`/links/${current.id}`)
 						.then((res) => {
@@ -522,23 +524,42 @@ window.addEventListener("DOMContentLoaded", function () {
 			const state = showPass.checked;
 			passwordField.type = state ? "text" : "password";
 		});
+		document.getElementsByClassName('button is-danger Fechar-overlay')[0].addEventListener("click",function(e){
+				var para = document.getElementById('create-user-area');
+				var display = para.style.display;
+				var settings = document.getElementById("settings")
+				var display1 = settings.style.display
+				if(display == "block"){
+					console.log("teste1")
+		
+					if(display = 'block'){   // 2. it should be "=" instead of "=="
+						para.style.display = 'none';
+						if(display1 = 'none')
+							settings.style.display = 'block';
+							console.log('works1');
+						
+						console.log('works');
+					}
+					}
+			});
+
 		form.onsubmit = function (e) {
 			e.preventDefault();
 			let username = usernameField.value;
 			let password = passwordField.value;
 
 			if (!username || username.length < 3) {
-				return showError("Username must be filled out and be more than 3 characters.");
+				return showError("O nome de usuário deve ser preenchido e ter mais de 3 caracteres.");
 			}
 			if (username.length > 50) {
-				return showError("Username cannot be more than 50 characters... why tho?");
+				return showError("O nome de usuário não pode ter mais de 50 caracteres... por quê?");
 			}
 
 			if (!password || password.length < 3) {
-				return showError("Password must be filled out and be more than 3 characters.");
+				return showError("A senha deve ser preenchida e ter mais de 3 caracteres.");
 			}
 			if (password.length > 50) {
-				return showError("Password cannot be more than 100 characters. Bcrypt only makes use of the first 72 bytes.");
+				return showError("A senha não pode ter mais de 100 caracteres. O Bcrypt usa apenas os primeiros 72 bytes.");
 			}
 			submitButton.classList.add("is-loading");
 			Api.post("/users/create", {
@@ -552,7 +573,7 @@ window.addEventListener("DOMContentLoaded", function () {
 					if (res.error) {
 						showCreateError(res.error.message);
 					} else {
-						showMessage("User created", `User ${username} has been created, and opened in the settings panel.`, "success", 10);
+						showMessage("Usuário criado", `Usuário ${username} foi criado e aberto no painel de configurações.`, "success", 10);
 						updateTargetUser(res.username);
 						for (let count = 0; count < list.children.length; count++) {
 							list.children[count].className = "panel-block";
@@ -615,7 +636,7 @@ window.addEventListener("DOMContentLoaded", function () {
 				const oldPass = passwordConfirm.value;
 
 				if (!oldPass || oldPass === "" || oldPass.length <= 3) {
-					showPasswordError("You must provide your current password. If you do not know it, ask the root user to reset it for you.");
+					showPasswordError("Você deve providenciar a sua senha. Caso não se lembre, peça ao MrChuw para reseta-la.");
 					return false;
 				}
 			}
@@ -634,7 +655,7 @@ window.addEventListener("DOMContentLoaded", function () {
 					.then(function (res) {
 						if (!res.error) {
 							submitButton.classList.remove("is-loading");
-							showMessage("Password updated", `${target === window.user.username ? "Your" : `${target}'s `} password was successfully updated.`, "success", 10000);
+							showMessage("Senha Atualizada", `${target === window.user.username ? "Sua" : `${target}'s `} a senha foi atualizada com sucesso.`, "success", 10000);
 						} else {
 							showError(res.error);
 							submitButton.classList.remove("is-loading");
@@ -645,7 +666,7 @@ window.addEventListener("DOMContentLoaded", function () {
 						showError(e);
 					});
 			} else {
-				showPasswordError("You must fill out the password. It should be more than 6 characters.");
+				showPasswordError("Você deve providenciar uma senha. E deve ser maior do que 6 caracteres.");
 				return false;
 			}
 
@@ -660,18 +681,19 @@ window.addEventListener("DOMContentLoaded", function () {
 	function onTokenClick() {
 		tokenB.classList.add("is-loading");
 		const tar = getTarget();
-		const sure = confirm("Are you sure you want to do this? You will need to update the ShareX config for this user.");
+		const sure = confirm("Você tem certeza de que quer fazer isso? Você precisará atualizar a configuração do ShareX para este usuário.");
 		if (sure) {
 			Api.patch(`/users/${tar}/token`)
 				.then(function (res) {
 					if (!res.error) {
 						tokenB.classList.remove("is-loading");
 						const tar = getTarget();
-						const str = tar === window.user.username ? "Your token was successfully reset. Make sure you update your ShareX config!" : `${tar}'s token was reset. Make sure they update their ShareX config!`;
+						const str = tar === window.user.username ? "Seu token foi redefinido com sucesso. Certifique-se de atualizar sua configuração do ShareX!" : `O token de ${tar} foi redefinido. Certifique-se de atualizar sua configuração do ShareX!`;
 
-						showMessage("Token reset", str, "success", 15000);
+
+						showMessage("Token redefinido", str, "com sucesso", 15000);
 						const tokenBox = document.getElementById("reset-box");
-						tokenBox.innerHTML = `Success! New token: <code>${res.token}</code>.`;
+						tokenBox.innerHTML = `Sucesso! Novo token: <code>${res.token}</code>.`;
 						tokenBox.hidden = false;
 					} else {
 						showError(res.error);
@@ -702,7 +724,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			deleteUsr.classList.add("is-loading");
 
 			const target = getTarget();
-			const sure = confirm(`Are you sure you want to delete ${target} ${deleteFiles ? "and all of their files" : ""}?`);
+			const sure = confirm(`Tem certeza de que deseja excluir ${target} ${deleteFiles ? "e todos os seus arquivos" : ""}?`);
 			if (!sure) {
 				doneLoading();
 				return false;

@@ -12,7 +12,8 @@ const {
 	dest,
 	hashRounds,
 	adminUser,
-	getBase
+	getBase,
+	print
 } = require("../util");
 const { isLength, isAlphanumeric, isEmpty } = require("validator");
 const { compare, hash } = require("bcrypt");
@@ -34,7 +35,7 @@ users.post("/login", errorCatch(async function (req, res) {
 	const password = req.body.password;
 	if (validUsername(username)) {
 		if (!validPassword(password)) {
-			return res.status(400).send(errorGenerator(400, "Invalid password: Must be less than 100 characters."));
+			return res.status(400).send(errorGenerator(400, "Senha inválida: Deve ter menos de 100 caracteres."));
 		}
 
 		// It passes all checks
@@ -51,7 +52,7 @@ users.post("/login", errorCatch(async function (req, res) {
 						secure: req.secure || false,
 						sameSite: "Lax"
 					});
-					return res.send({ success: true, message: "Logged in." });
+					return res.send({ success: true, message: "Logado." });
 				} else {
 					// No token - generate.
 					const token = await generateToken();
@@ -63,16 +64,16 @@ users.post("/login", errorCatch(async function (req, res) {
 						secure: req.secure || false,
 						sameSite: "Lax"
 					});
-					return res.send({ success: true, message: "Logged in." });
+					return res.send({ success: true, message: "Logado." });
 				}
 			} else {
-				return res.status(403).send(errorGenerator(403, "Forbidden: Invalid username or password."));
+				return res.status(403).send(errorGenerator(403, "Proibido: Nome de usuário ou senha inválidos."));
 			}
 		} else {
-			return res.status(404).send(errorGenerator(404, "User not found."));
+			return res.status(404).send(errorGenerator(404, "Usuário não encontrado."));
 		}
 	} else {
-		return res.status(400).send(errorGenerator(400, "Invalid username."));
+		return res.status(400).send(errorGenerator(400, "Nome de usuário Inválido."));
 	}
 }));
 
@@ -92,20 +93,20 @@ users.post("/create", errorCatch(async function (req, res) {
 	const password = req.body.password;
 	if (validUsername(username)) {
 		if (!validPassword(password)) {
-			return res.status(400).send(errorGenerator(400, "Invalid password. - Must be > 3 and < 50."));
+			return res.status(400).send(errorGenerator(400, "Senha inválida. - Deve ser > 3 e < 50."));
 		}
 
 		// It passes all checks
 		const user = await db.getUser(username);
 		if (user) {
-			return res.status(404).send(errorGenerator(400, "Username is already in use."));
+			return res.status(404).send(errorGenerator(400, "O nome de usuário já está em uso."));
 		} else {
 			const hashed = await hash(password, hashRounds);
 			await db.addUser(username, hashed);
 			res.send({ success: true, username });
 		}
 	} else {
-		return res.status(400).send(errorGenerator(400, "Invalid username."));
+		return res.status(400).send(errorGenerator(400, "Nome de usuário Inválido."));
 	}
 }));
 
@@ -138,26 +139,27 @@ users.use("/:id/", async function (req, res, next) {
 						return next();
 					}
 				} else {
-					return res.status(404).send(errorGenerator(404, "User not found."));
+					return res.status(404).send(errorGenerator(404, "Usuário não encontrado."));
 				}
 			} else {
-				return res.status(400).send(errorGenerator(400, "Invalid username."));
+				return res.status(400).send(errorGenerator(400, "Nome de usuário Inválido."));
 			}
 		}
 	} else {
 		throw new Error("No id on user middleware... what?");
 	}
 });
+
 users.delete("/:id", errorCatch(async function (req, res, next) {
 	if (req.target.isAdmin) {
-		return res.status(400).send(errorGenerator(400, "The admin user cannot be deleted."));
+		return res.status(400).send(errorGenerator(400, "O usuário administrador não pode ser excluído."));
 	}
 
 	const deleteFiles = req.query.deleteFiles && req.query.deleteFiles === "true";
 
 	const files = await db.getAllUserFiles(req.target.username);
 	if (deleteFiles) {
-		console.log(`Deleting user ${req.target.username} AND all of their files.`);
+		console.log(`Excluindo o usuário ${req.target.username} E todos os seus arquivos.`);
 	}
 
 	for (const file of files) {
@@ -166,7 +168,7 @@ users.delete("/:id", errorCatch(async function (req, res, next) {
 			fs.unlink(path.join(dest, loc), (err) => {
 				if (err) {
 					if (err.code === "ENOENT") {
-						console.log(`Tried to delete file ${loc} but it was already removed.`);
+						console.log(`Tentei deletar o arquivo ${loc} mas já foi removido.`);
 					} else {
 						return next(err);
 					}
@@ -180,8 +182,8 @@ users.delete("/:id", errorCatch(async function (req, res, next) {
 	await db.removeUser(req.target.username);
 
 	res.send({ success: true, message: "User deleted." });
+	print(`${req.user.username} esta deletando ${req.target.username}`, `${req.user.username}`, req )
 }));
-
 
 users.get("/:id/config", errorCatch(async function (req, res) {
 	// Generate config
@@ -219,6 +221,7 @@ users.get("/:id/config", errorCatch(async function (req, res) {
 	res.setHeader("content-type", "application/sxcu");
 	const stringified = JSON.stringify(config, null, "\t");
 	res.send(stringified);
+	print(`${req.user.username} um arquivo de configuração para ${req.target.username}`, `${req.user.username}`, req )
 }));
 
 users.patch("/:id/password", errorCatch(async function (req, res) {
@@ -230,22 +233,23 @@ users.patch("/:id/password", errorCatch(async function (req, res) {
 			// They are not admin, so we need to make sure they supplied correct current password
 			if (validPassword(oldPassword)) {
 				if (!req.target.password) {
-					throw new Error("Target user password is not set. This should not be possible.");
+					throw new Error("A senha do usuário de destino não está definida. Isso não deveria ser possível.");
 				}
 				const correct = await compare(oldPassword, req.target.password);
 				if (!correct) {
-					return res.status(403).send(errorGenerator(403, "Incorrect current password!"));
+					return res.status(403).send(errorGenerator(403, "Senha atual incorreta!"));
 				}
 			} else {
-				return res.status(400).send(errorGenerator(400, "Invalid old password."));
+				return res.status(400).send(errorGenerator(400, "Senha antiga inválida."));
 			}
 		}
 		// they are good - either admin or provided correct pass.
 		const hashed = await hash(newPassword, hashRounds);
 		await db.setPassword(req.target.username, hashed);
+		print(`${req.user.username} esta criando uma senha para ${req.target.username}`, `${req.user.username}`, req )
 		return res.send({ success: true, updatedUser: req.target.username });
 	} else {
-		return res.status(400).send(errorGenerator(400, "Invalid or no new password provided."));
+		return res.status(400).send(errorGenerator(400, "Nova senha inválida ou não fornecida."));
 	}
 }));
 
@@ -263,9 +267,9 @@ users.patch("/:id/token", errorCatch(async function (req, res) {
 			sameSite: "Lax"
 		});
 	}
+	print(`${req.user.username} esta gerando um token para ${req.target.username}`, `${req.user.username}`, req )
 	return res.send({ success: true, token: newToken });
 }));
-
 
 users.post("/:id/logout", errorCatch(async function (req, res) {
 	if (req.user.username === req.target.username) {
@@ -277,6 +281,7 @@ users.post("/:id/logout", errorCatch(async function (req, res) {
 			sameSite: "Lax"
 		});
 	}
+	print(`${req.user.username} esta dando Log out de ${req.target.username}`, `${req.user.username}`, req )
 	return res.send({ success: true });
 }));
 
@@ -299,11 +304,15 @@ users.get("/:id/files", errorCatch(async function (req, res) {
 
 	const files = await db.getUserFiles(req.target.username, pageNo);
 	res.send({ success: true, files });
+	print(`Esta carregando pagina ${req.query.page} com: ${files.length} arquivos de ${req.target.username}`, `${req.user.username}`, req )
 }));
 
 users.get("/:id/links", errorCatch(async function (req, res) {
 	const links = await db.getLinks(req.target.username);
 	res.send({ success: true, links: links || [] });
+	print(`Esta carregando paginas de links com: ${links.length} de ${req.target.username}`, `${req.user.username}`, req )
 }));
 
 module.exports = users;
+
+

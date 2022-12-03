@@ -1,26 +1,38 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
+html {
+	background-color: #181a1b;
+}
+
 .first {
-    background-color: #29A584;
+	background-color: #ff4500;
 }
 
 .tagline-one {
-    color: #354469;
-    letter-spacing: 1.5px;
-    font-family: Roboto, monospace;
+	color: #00FFFF;
+	letter-spacing: 1.5px;
+	font-family: Roboto, monospace;
 }
 
 .tagline-two {
-    color: #ECECF1;
-    letter-spacing: 1.5px;
-    font-family: Roboto, monospace;
+	color: #ffffff;
+	letter-spacing: 1.5px;
+	font-family: Roboto, monospace;
 }
 
 #hostname {
-    border-bottom: 3px solid #32a568;
-    font-family: monospace;
+	border-bottom: 3px solid #ff4500;
+	font-family: monospace;
 }
 
-.spacer {
-    margin-top: 10rem;
+.section span {
+	color: #00FFFF
 }
+
+/* .section h1 , .section h2 , .section h3, .section p {
+	color: #ffffff
+} */
+
+.section * {
+	color: #ffffff;
+} 

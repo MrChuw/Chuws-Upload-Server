@@ -1,0 +1,47 @@
+/* .blue {
+    background-color:black;
+  } */
+
+  .blue a{
+    /*color:white;*/
+    /*background-color:white;*/
+  }
+  
+  .navbarr-link p{
+    color:white;
+  }
+
+  .is-white {
+    color:white;
+  }
+
+  .is-white:hover{
+    color:black;
+    background-color: blue;
+  }
+  
+.navbar-link.is-active {
+    background-color:green;
+}
+
+
+/* .navbar-dropdown navbar-item:hover{
+    background-color:red !important;
+} */
+
+.navbar-item{
+    color:white !important;
+}
+
+.navbar-dropdown {
+	background-color: rgb(0, 0, 0) !important;
+}
+
+/* .navbar-dropdown  */
+.navbar-item:hover{
+    background-color:#f7f7f771 !important;
+}
+
+.navbar-end .navbar-item:hover{
+    background-color:#ffffff00 !important;
+}

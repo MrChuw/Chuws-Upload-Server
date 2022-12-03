@@ -1,15 +1,11 @@
 {
-  "name": "save-server",
-  "version": "1.5.2",
-  "description": "A powerful ShareX image and URL server, with support for multiple users.",
+  "name": "Chuw's Upload Server",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
     "test": "eslint index.js server/",
     "start": "node ."
   },
-  "bugs": "https://github.com/neztore/save-server/issues",
-  "homepage": "https://github.com/neztore/save-server#readme",
-  "repository": "github:neztore/save-server",
   "keywords": [
     "sharex",
     "server",
@@ -20,13 +16,18 @@
   "author": "Neztore <hi@nezto.re> (https://nezto.re)",
   "license": "MIT",
   "dependencies": {
+    "@pm2/io": "^5.0.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "ejs": "^3.0.1",
     "express": "^4.17.1",
+    "hotnode": "^0.0.8",
+    "mongodb": "^4.12.1",
+    "mongoose": "^6.7.5",
     "multer": "^1.4.5-lts.1",
     "sqlite3": "^5.0.8",
+    "tippy.js": "^6.3.7",
     "validator": "^13.0.0"
   },
   "devDependencies": {

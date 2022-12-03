@@ -1,55 +1,44 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <%- include('../partials/sharedMeta.ejs'); %>
-    <link rel="stylesheet" type="text/css" href="/css/index.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <script src="/js/index.js"></script>
+	<%- include('../partials/sharedMeta.ejs'); %>
+	<link rel="stylesheet" type="text/css" href="/css/index.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+	<script src="/js/index.js"></script>
 </head>
 <body>
 <%- include('../partials/navbar.ejs'); %>
 <section class="first hero is-medium has-text-centered">
-    <div class="hero-body">
-        <div class="container">
-            <h1 class="title">
-                <span class="tagline-one">save</span><span class="tagline-two">server</span>
-            </h1>
+	<div class="hero-body">
+		<div class="container">
+			<h1 class="title">
+				<span class="tagline-one">Chuw's</span><span class="tagline-two"> Upload Server</span>
+			</h1>
 
-        </div>
-    </div>
+		</div>
+	</div>
 </section>
 <section class="section has-text-centered">
-    <h1 class="title has-text-centered"><span id="hostname"></span> ShareX file server</h1>
-    <h2 class="subtitle has-text-centered">Save-Server is a powerful open source ShareX file host,
-        which allows for images and other files to be uploaded to a custom server.</h2>
-    <p>If you've been given an account on this instance - or you've just finished setting up - head
-        to the <a href="/dashboard">dashboard</a> to view your files and settings.</p>
-    <h3 class="subtitle">About this instance</h3>
-    <nav class="level">
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="heading">Version</p>
-                <p class="subtitle"><%= version %></p>
-            </div>
-        </div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="heading">Uptime</p>
-                <p class="subtitle"><%= runningFor %> hours</p>
-            </div>
-        </div>
-        <div class="level-item has-text-centered">
-            <div>
-                <p class="heading"><span class="icon"><i class="fab fa-github"></i></span>Source
-                    code</p>
-                <a class="subtitle has-text-link" href="https://github.com/neztore/save-server">Save-Server</a>
-            </div>
-        </div>
-    </nav>
-    <hr class="spacer">
-    <small>You can edit this page to say whatever you like by editing the <code>server/client/pages/index.ejs</code>
-        file.</small>
-    <p>Save-Server by Neztore</p>
+	<h1 class="title has-text-centered"><span id="hostname"></span> Chuw's Upload Server</h1>
+	<h2 class="subtitle has-text-centered">Este é um servidor de upload para mim, meu bot e conhecidos.</h2>
+	<p>Se você tiver uma conta para este site, va para -
+		<a href="/dashboard">Painel de Controle</a> para ver arquivos e as configurações.</p>
+	<h3 class="subtitle">Sobre o site.</h3>
+	<nav class="level">
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Versão</p>
+				<p class="subtitle"><%= version %></p>
+			</div>
+		</div>
+		<div class="level-item has-text-centered">
+			<div>
+				<p class="heading">Uptime</p>
+				<p class="subtitle"><%= runningFor %> horas</p>
+			</div>
+		</div>
+	</nav>
 </section>
 </body>
 </html>

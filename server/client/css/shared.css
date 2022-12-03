@@ -7,6 +7,42 @@
     max-width: 30rem;
 }
 
+::-webkit-scrollbar{
+	width:10px;
+	height:0
+}
+
+:root{
+	--border-radius-l: 1rem;
+	--border-radius-m: calc(var(--border-radius-l) / 2);
+	--border-radius-s: calc(var(--border-radius-m) / 1.5);
+	--border-radius-ss: calc(var(--border-radius-s) / 1.25);
+	--hover-transition: cubic-bezier(0, 1.18, .4, .93)}
+
+
+::-webkit-scrollbar{
+	width:10px;
+	height:0
+}
+
+::-webkit-scrollbar-track{
+	background:#383a45;
+	border-radius:var(--border-radius-ss)
+}
+
+::-webkit-scrollbar-thumb{
+	background:#f73d3d;
+	border-radius:var(--border-radius-ss)
+}
+
+::-webkit-scrollbar-thumb:hover{
+	background: #f73d3d63
+}
+
+html {
+	background-color: black;
+}
+
 .fixed-message .message {
     margin-bottom: 0.5rem;
 }

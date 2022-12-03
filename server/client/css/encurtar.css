@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+html {
+	background-color: #181a1b;
+}
+
+.section *{
+	color: #ffffff;
+} 
+
+.section input::placeholder {
+	color: #5A5959
+}
+.section input {
+	color: black
+}

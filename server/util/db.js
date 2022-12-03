@@ -2,7 +2,7 @@ const sqlite = require("sqlite3");
 const { join } = require("path");
 const { adminUser, hashRounds, dest } = require("./index");
 const { hash } = require("bcrypt");
-const defaultPassword = "saveServerRoot";
+const defaultPassword = "root1234";
 const { access, constants } = require("fs");
 
 const PAGE_SIZE = 200;

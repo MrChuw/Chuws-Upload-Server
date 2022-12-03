@@ -35,6 +35,10 @@ function generateToken() {
 	});
 }
 
+function print(onde, quem, oq) {
+	console.log(onde.concat(" | ", quem).concat(" | ", oq.headers.referer))
+}
+
 const validTag = (tag) => typeof tag === "string" && !isEmpty(tag) && isAlphanumeric(tag);
 const validFile = (tag) => typeof tag === "string" && !isEmpty(tag) && isWhitelisted(tag, fileWhitelist) && isLength(tag, {
 	min: 6,
@@ -52,5 +56,6 @@ module.exports = {
 	validFile,
 	adminUser,
 	hashRounds,
-	getBase
+	getBase,
+	print
 };

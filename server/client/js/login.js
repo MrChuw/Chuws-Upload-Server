@@ -22,13 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			});
 			if (res.error) {
-				showError("Incorrect username or password: Please check them and try again.");
+				showError("Usuário ou senha incorretos: Por favor verifique e tente novamente.");
 				return false;
 			} else {
 				window.document.location.href = "/dashboard";
 			}
 		} else {
-			showError("Please fill out both username and password.");
+			showError("Por favor preencha tanto usuário quanto a senha.");
 			return false;
 		}
 		return false;

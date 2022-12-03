@@ -1,6 +1,6 @@
 // Main server file
 "use strict";
-const express = require("express");
+const express = require("express")
 const path = require("path");
 
 const files = require("./api/files");
@@ -10,7 +10,7 @@ const auth = require("./middleware/auth");
 const csrf = require("./middleware/csrf");
 const ratelimit = require("./middleware/ratelimit");
 
-const { errorHandler } = require("./util");
+const { errorHandler, print } = require("./util");
 const bodyParser = require("body-parser");
 const cookie = require("cookie-parser");
 const { version } = require("../package");
@@ -25,6 +25,7 @@ app.use(cookie());
 app.set("x-powered-by", false);
 
 
+const imgur = require("./api/imgur"); // Teste para a nova api
 
 // Client
 const client = path.join(__dirname, "client");
@@ -42,18 +43,26 @@ if (process.env.ratelimit !== undefined) {
 // Global rate limit per minute
 app.use(ratelimit(limit, 60));
 
+app.get("/imlinks", async (req, res) => { 
+	res.render(getLoc("imlinks"), {})
+});
+
 app.use("/api/files", files.router);
 app.use("/api/links", links);
+app.use("/api/imgur", imgur);
 
 app.use(csrf);
+app.use("/api/imgur", imgur); 
 app.use("/api/users", users);
 app.use("/api/links", links);
-app.use("/u", links);
+app.use("/r", links);
+app.use("/im", imgur);
 
 // Main routes
 const getLoc = (n) => path.join(pages, `${n}.ejs`);
 app.get("/", (req, res) => {
 	const runningHours = process.uptime() / (60 * 60);
+	print("Index", "Não tem usuário aqui", req)
 	return res.render(getLoc("index"), {
 		runningFor: (Math.floor(runningHours * 10) / 10), // uptime in hours, rounded to 1 decimal
 		version
@@ -63,6 +72,7 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => res.render(getLoc("login")));
 app.post("/login", (req, res) => res.render(getLoc("login")));
 
+
 app.use("/dashboard", auth.redirect);
 app.get("/dashboard", async (req, res) => {
 	res.render(getLoc("dashboard"), {
@@ -71,11 +81,17 @@ app.get("/dashboard", async (req, res) => {
 			isAdmin: req.user.isAdmin
 		}
 	});
+	if (req.user.username) {
+		print("Dashboard", req.user.username, req)
+	}
 });
 
-app.use("/short", auth.redirect);
-app.get("/short", async (req, res) => {
-	res.render(getLoc("short"));
+app.use("/encurtar", auth.redirect);
+app.get("/encurtar", async (req, res) => {
+	if (req.user.username) {
+		print("Encurtar", req.user.username, req)
+	}
+	res.render(getLoc("encurtar"));
 });
 
 app.get("/:id", files.getFile);
@@ -83,14 +99,15 @@ app.get("/:id", files.getFile);
 // Error handling
 app.use(errorHandler);
 app.use(function (_req, res) {
+	print("404", "Não tem usuário aqui", _req)
 	res.status(404).render(getLoc(404));
 });
 
 process.on("uncaughtException", err => {
-	console.error("There was an uncaught error", err);
+	console.error("Tem um erro inesperado:", err);
 });
 
 module.exports = function (port = 80) {
-	app.listen(port, () => console.log(`SaveServer running on port ${port}!`));
+	app.listen(port, () => console.log(`Estou rodando na porta: ${port}!`));
 	app.set("port", port);
 };

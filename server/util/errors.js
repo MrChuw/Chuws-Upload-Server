@@ -51,18 +51,18 @@ const errorCatch = (fn) =>
 		if (routePromise && routePromise.catch) {
 			routePromise.catch((err) => {
 				next(err);
-				console.log("Route error caught", err.message);
+				console.log("Erro de rota detectado", err.message);
 			});
 		}
 	};
 
 // Contains common errors
 const errors = {
-	unauthorized: errorGenerator(401, "Unauthorized: Please login or supply authorization token."),
-	forbidden: errorGenerator(403, "Forbidden. You do not have access to that resource."),
-	notFound: errorGenerator(404, "Page not found."),
+	unauthorized: errorGenerator(401, "Não autorizado: faça o login ou forneça o token de autorização."),
+	forbidden: errorGenerator(403, "Proibido. Você não tem acesso a esse recurso."),
+	notFound: errorGenerator(404, "Pagina não encontrada."),
 
-	notImplemented: errorGenerator(501, "Not implemented.")
+	notImplemented: errorGenerator(501, "Não implementado.")
 };
 
 module.exports = { errorHandler, errorGenerator, errors, errorCatch, prettyError };

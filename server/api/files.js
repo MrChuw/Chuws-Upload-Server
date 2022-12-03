@@ -7,7 +7,8 @@ const {
 	dest,
 	prettyError,
 	validFile,
-	getBase
+	getBase,
+	print
 } = require("../util");
 const multer = require("multer");
 const db = require("../util/db");
@@ -32,7 +33,7 @@ if (process.env.nameLength) {
 		if (envNameLength > 1 && envNameLength <= 40) {
 			fileNameLength = envNameLength;
 		} else {
-			console.warn(`Warn: Rejected nameLength environment variable - Must be between 1 and 40. Value: ${envNameLength}`);
+			console.warn('Aviso: nameLength regeitado para variável env - Deve ser entre 1 e 40. Valor ${envNameLength}');
 		}
 	}
 }
@@ -80,18 +81,27 @@ async function getFile(req, res, next) {
 		const without = removeExt(req.params.id);
 		const idStr = (without === "" ? req.params.id : without);
 		if (!isAlphanumeric(idStr)) {
-			return res.status(400).send(prettyError(400, "You provided an invalid file identifier, it should be alphanumeric."));
+			return res.status(400).send(prettyError(400, "Você providenciou um identificador de arquivo invalido, ele deve ser alfanumérico."));
 		}
 		if (idStr.length > fileNameLength) {
-			return res.status(400).send(prettyError(400, "File name portion too large."));
+			return res.status(400).send(prettyError(400, "Nome do arquivo muito grande."));
 		}
 
-		const file = await db.getFile(idStr);
+		const file = await db.getFile(idStr); // aqui é onde pega o arquivo, o resto é so processar o requerimento.
+		if (req.headers.referer != `${getBase(req)}/dashboard`) {
+			if (["404", "error"].includes(req.params.id)){
+				print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "404", req)}
+			} else {
+				print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "dono:".concat(" ", file.owner), req)}
+		if (!req.headers.referer) {
+			print("Abrindo".concat(" | ", `${getBase(req)}/${req.params.id}`), "dono:".concat(" ", file.owner), req)
+		}
 		if (file) {
-			const loc = `${file.id}${file.extension ? `.${file.extension}` : ""}`;
+			const loc = `${file.id}${file.extension ? `.${file.extension}` : ""}`; // aqui cria a extensao do arquivo
 
 			if (file.extension && extensions.includes(file.extension.toLowerCase()) && !req.query.download) {
 				const content = await openFile(path.join(dest, loc));
+				let teste = path.join(__dirname, "..", "client", "pages", "document.ejs")
 				return res.render(path.join(__dirname, "..", "client", "pages", "document.ejs"), {
 					content: content,
 					isRendered: (file.extension.toLowerCase() === "md" || file.extension.toLowerCase() === "markdown"),
@@ -106,25 +116,24 @@ async function getFile(req, res, next) {
 			const options = {
 				root: dest
 			};
-			res.sendFile(loc, options, function (err) {
+			res.sendFile(loc, options, function (err) { // aqui continua
 				if (err) {
 					next(err);
 				}
-			});
-		} else {
+			});} 
+		else {
 			// 404
 			next();
-		}
-	} else {
-		res.status(400).send(await prettyError(400, "You provided an invalid file identifier."));
-	}
+		}}
+	else {
+		res.status(400).send(await prettyError(400, "Você providenciou um identificador de arquivo invalido."));}
 }
 
 files.get("/:id", errorCatch(getFile));
 
 
 // Supports uploading multiple files, even though ShareX doesn't.
-files.post("/", ratelimit(15, 60));
+files.post("/", ratelimit(60, 10));
 files.post("/", auth.header, upload.array("files", 10), errorCatch(async function (req, res) {
 	if (!req.user) {
 		return console.log("what??");
@@ -140,8 +149,9 @@ files.post("/", auth.header, upload.array("files", 10), errorCatch(async functio
 
 		});
 	} else {
-		res.status(400).send(errorGenerator(400, "No file upload detected!"));
+		res.status(400).send(errorGenerator(400, "Não foi identificado upload de nenhum arquivo!"));
 	}
+	print("Criando".concat(": ", `${getBase(req)}/${req.files[0].filename}`), req.user.username, req)
 }));
 files.use(csrf);
 files.use(auth);
@@ -151,6 +161,9 @@ files.delete("/:id", errorCatch(async function (req, res, next) {
 		const idStr = (without === "" ? req.params.id : without);
 
 		const file = await db.getFile(idStr);
+		const loc = `${file.id}${file.extension ? `.${file.extension}` : ""}`;
+		print("Deleteando".concat(": ", loc ), req.user.username.concat(" de ", file.owner), req)
+
 		if (file) {
 			if ((file.owner === req.user.username) || req.user.isAdmin) {
 				await db.removeFile(file.id);
@@ -159,22 +172,21 @@ files.delete("/:id", errorCatch(async function (req, res, next) {
 				fs.unlink(path.join(dest, loc), (err) => {
 					if (err) {
 						if (err.code === "ENOENT") {
-							console.log(`Tried to delete file ${loc} but it was already removed.`);
+							console.log('Tentei deletar o arquivo ${loc} mas já foi removido.');
 						} else {
 							return next(err);
 						}
 					}
-					return res.send({ success: true, message: "File deleted." });
+					return res.send({ success: true, message: "Arquivo detectado." });
 				});
 			} else {
-				return res.status(403).send(errorGenerator(403, "You are not allowed to edit that file."));
+				return res.status(403).send(errorGenerator(403, "Você não tem permissão para editar esse arquivo."));
 			}
 		} else {
-			return res.status(400).send(errorGenerator(404, "File not found."));
-		}
-	} else {
-		return res.status(400).send(errorGenerator(400, "Invalid file id."));
-	}
+			return res.status(400).send(errorGenerator(404, "Arquivo não encontrado."));
+		}} 
+	else {
+		return res.status(400).send(errorGenerator(400, "ID de arquivo inválido."));}
 }));
 
 module.exports = {
@@ -196,3 +208,4 @@ function openFile(path) {
 		});
 	});
 }
+
