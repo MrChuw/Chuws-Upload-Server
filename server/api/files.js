@@ -66,7 +66,7 @@ const removeExt = (str) => str.substring(0, str.indexOf("."));
 const upload = multer({
 	storage: storage,
 	limits: {
-		fileSize: 10000000
+		fileSize: 104857600
 	}
 });
 const extensions = ["md", "js", "py", "ts", "Lua", "cpp", "c", "bat", "h", "pl", "java", "sh", "swift", "vb", "cs", "haml", "yml", "markdown", "hs", "pl", "ex", "yaml", "jsx", "tsx", "txt"];
