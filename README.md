@@ -1,6 +1,6 @@
 # Chuw's Upload Server
 
-Esta é uma versão modificada do [save-server](https://github.com/neztore/save-server) para servir as minhas nescidades.
+Esta é uma versão modificada do [save-server](https://github.com/neztore/save-server) para servir as minhas nessecidades.
 
 ### Caso precise de ajuda:
 > Não indico usar a minha versão.
